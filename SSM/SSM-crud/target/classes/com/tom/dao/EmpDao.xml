@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tom.dao.EmpDao">
+    <resultMap id="empMap" type="emp">
+        <id column="emp_id" property="empId"/>
+        <result column="name" property="name"/>
+        <result column="sex" property="sex"/>
+        <result column="age" property="age"/>
+        <result column="phone" property="phone"/>
+        <result column="join_date" property="joinData"/>
+        <result column="address" property="address"/>
+        <result column="dept_id" property="deptId"/>
+        <result column="remark" property="remark"/>
+        <association column="dept_id" property="dept" javaType="dept">
+            <id column="id" property="id"/>
+            <result column="dept_name" property="deptName"/>
+            <result column="remark" property="remark"/>
+        </association>
+    </resultMap>
+    <select id="findAll" resultMap="empMap">
+        select * from tb_emp e left join tb_dept d on e.dept_id = d.id
+    </select>
+    <select id="findByCondition" resultMap="empMap" parameterType="emp">
+        select e.emp_id, e.name, e.sex, e.age, e.phone, e.join_date, e.address, e.dept_id, e.remark, d.id, d.dept_name  from tb_emp e left join tb_dept d on e.dept_id = d.id
+        <where>
+            <if test="empId != null">
+                and e.emp_id = #{empId}
+            </if>
+            <if test="name != null">
+                and e.name like '%' #{name} '%'
+            </if>
+            <if test="sex != null">
+                and e.sex = #{sex}
+            </if>
+            <if test="deptId != null">
+                and e.dept_id = #{deptId}
+            </if>
+        </where>
+    </select>
+    <insert id="insert" parameterType="emp">
+         insert into tb_emp(
+            name,
+            sex,
+            age,
+            phone,
+            join_date,
+            address,
+            dept_id,
+            remark
+        ) values (
+            #{name},
+            #{sex},
+            #{age},
+            #{phone},
+            #{joinData},
+            #{address},
+            #{deptId},
+            #{remark}
+        )
+    </insert>
+    <delete id="deleteEmp" parameterType="int">
+        delete from tb_emp where emp_id = #{empId}
+    </delete>
+    <select id="findById" resultMap="empMap" parameterType="int">
+        select * from tb_emp where emp_id=#{empId}
+    </select>
+    <update id="updateEmp" parameterType="emp">
+         update tb_emp set name=#{name},sex=#{sex},age=#{age},phone=#{phone},
+        join_date=#{joinData},address=#{address},remark=#{remark},dept_id=#{deptId}
+        where emp_id=#{empId}
+    </update>
+</mapper>
